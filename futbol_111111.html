@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cancha Abierta · Guía de fútbol</title>
+<style>
+  :root{
+    --cesped:#1d4a2c;
+    --cesped-claro:#2a6a40;
+    --tiza:#f2f5f0;
+    --tinta:#14231a;
+    --amarilla:#f2c200;
+    --roja:#d62839;
+    --linea:rgba(242,245,240,.55);
+    --titulos:"Arial Black","Impact","Helvetica Neue",sans-serif;
+    --texto:"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--texto);background:var(--tiza);color:var(--tinta);line-height:1.6;font-size:1.05rem}
+
+  /* Los radios controlan qué sección se ve (sin JavaScript) */
+  .tab{position:absolute;opacity:0;pointer-events:none}
+
+  /* ---------- Cabecera y menú ---------- */
+  header{position:sticky;top:0;z-index:10;background:var(--cesped);color:var(--tiza);border-bottom:4px solid var(--amarilla)}
+  .barra{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.6rem 1.2rem}
+  .marca{font-family:var(--titulos);font-size:1.25rem;letter-spacing:.02em;white-space:nowrap}
+  nav{display:flex;gap:.3rem;overflow-x:auto;scrollbar-width:none}
+  nav::-webkit-scrollbar{display:none}
+  nav label{cursor:pointer;padding:.55rem 1rem;border-radius:999px;font-weight:600;font-size:.95rem;white-space:nowrap;border:2px solid transparent;transition:background .2s,color .2s,transform .2s}
+  nav label:hover{background:rgba(242,245,240,.14);transform:translateY(-2px)}
+
+  #t1:checked ~ header label[for=t1],
+  #t2:checked ~ header label[for=t2],
+  #t3:checked ~ header label[for=t3],
+  #t4:checked ~ header label[for=t4]{background:var(--amarilla);color:var(--tinta)}
+
+  #t1:focus-visible ~ header label[for=t1],
+  #t2:focus-visible ~ header label[for=t2],
+  #t3:focus-visible ~ header label[for=t3],
+  #t4:focus-visible ~ header label[for=t4]{outline:3px solid var(--tiza);outline-offset:2px}
+
+  /* ---------- Secciones ---------- */
+  main section{display:none;animation:entra .35s ease}
+  #t1:checked ~ main #s1,
+  #t2:checked ~ main #s2,
+  #t3:checked ~ main #s3,
+  #t4:checked ~ main #s4{display:block}
+  @keyframes entra{from{opacity:0}to{opacity:1}}
+
+  .contenedor{max-width:1100px;margin:0 auto;padding:2.5rem 1.2rem}
+  h1,h2,h3{font-family:var(--titulos);line-height:1.1;font-weight:400}
+  h2{font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:.6rem}
+  h3{font-size:1.2rem;margin-bottom:.4rem}
+  .intro{max-width:62ch;margin-bottom:2rem;color:#2f4437}
+
+  /* ---------- Portada: el campo ---------- */
+  .campo{position:relative;overflow:hidden;color:var(--tiza);text-align:center;
+    background:repeating-linear-gradient(90deg,var(--cesped) 0 70px,var(--cesped-claro) 70px 140px)}
+  .campo::before{content:"";position:absolute;inset:18px;border:3px solid var(--linea);border-radius:4px}
+  .campo::after{content:"";position:absolute;left:50%;top:50%;width:260px;height:260px;transform:translate(-50%,-50%);
+    border:3px solid var(--linea);border-radius:50%;box-shadow:0 0 0 0 transparent}
+  .campo .linea-media{position:absolute;left:50%;top:18px;bottom:18px;width:3px;background:var(--linea);transform:translateX(-50%)}
+  .campo .contenido{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:6rem 1.5rem}
+  .campo h1{font-size:clamp(2.4rem,8vw,4.8rem);text-shadow:0 3px 0 rgba(0,0,0,.25);margin-bottom:1rem}
+  .campo p{font-size:1.15rem;background:rgba(20,35,26,.72);display:inline-block;padding:.7rem 1.1rem;border-radius:6px}
+  .accesos{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:center;margin-top:1.8rem}
+  .accesos label{cursor:pointer;background:var(--amarilla);color:var(--tinta);font-weight:700;padding:.75rem 1.4rem;border-radius:6px;transition:transform .2s,box-shadow .2s}
+  .accesos label:hover{transform:translateY(-3px);box-shadow:0 6px 0 rgba(0,0,0,.25)}
+  .accesos label.alt{background:var(--tiza)}
+
+  /* ---------- Tarjetas y rejillas ---------- */
+  .rejilla{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.2rem}
+  .dato{background:#fff;border-left:6px solid var(--cesped);padding:1.1rem 1.3rem;border-radius:0 8px 8px 0}
+  .dato b{display:block;font-family:var(--titulos);font-size:1.9rem;font-weight:400;color:var(--cesped)}
+  .dato.amarillo{border-color:var(--amarilla)}
+  .dato.rojo{border-color:var(--roja)}
+
+  .bloque{margin-top:2.6rem}
+  .bloque>h3{font-size:1.5rem;margin-bottom:1rem}
+  ul.reglas{list-style:none;display:grid;gap:.7rem}
+  ul.reglas li{background:#fff;padding:.9rem 1.1rem;border-radius:8px;border:1px solid #d5ded6}
+  ul.reglas strong{color:var(--cesped)}
+
+  .tarjetas{display:inline-block;width:.9rem;height:1.25rem;border-radius:2px;vertical-align:middle;margin-right:.3rem}
+  .t-amarilla{background:var(--amarilla)}
+  .t-roja{background:var(--roja)}
+
+  /* ---------- Formaciones ---------- */
+  .formacion{background:var(--cesped);color:var(--tiza);border-radius:10px;padding:1.2rem 1.3rem}
+  .formacion h3{color:var(--amarilla);font-size:1.7rem}
+  .formacion .puntos{display:flex;flex-direction:column;gap:.5rem;margin:.8rem 0}
+  .fila{display:flex;justify-content:space-around}
+  .fila i{width:1.05rem;height:1.05rem;border-radius:50%;background:var(--tiza);display:block}
+  .fila.portero i{background:var(--amarilla)}
+  .formacion p{font-size:.95rem}
+
+  /* ---------- Problemas y soluciones (acordeón) ---------- */
+  details{background:#fff;border:1px solid #d5ded6;border-radius:8px;margin-bottom:.8rem;overflow:hidden}
+  summary{cursor:pointer;list-style:none;padding:1rem 1.2rem;font-weight:700;display:flex;gap:.8rem;align-items:center;transition:background .2s}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"";flex:none;width:.9rem;height:1.25rem;border-radius:2px;background:var(--roja)}
+  summary:hover{background:#eef3ee}
+  summary:focus-visible{outline:3px solid var(--cesped);outline-offset:-3px}
+  details[open] summary::before{background:var(--amarilla)}
+  details[open] summary{background:#eef3ee}
+  .solucion{padding:1rem 1.2rem 1.2rem 3rem;border-top:1px solid #d5ded6}
+  .solucion ul{margin:.5rem 0 0 1.1rem}
+
+  /* ---------- Pie de página ---------- */
+  footer{background:var(--tinta);color:var(--tiza);border-top:4px solid var(--amarilla);margin-top:2rem}
+  .pie{max-width:1100px;margin:0 auto;padding:2.2rem 1.2rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.6rem}
+  footer h4{font-family:var(--titulos);font-weight:400;color:var(--amarilla);margin-bottom:.5rem;font-size:1.1rem}
+  footer a{color:var(--tiza);text-underline-offset:3px}
+  footer a:hover{color:var(--amarilla)}
+  footer li{list-style:none;margin-bottom:.3rem}
+  .derechos{text-align:center;padding:1rem;font-size:.85rem;background:#0d1812}
+
+  @media (max-width:720px){
+    .barra{flex-direction:column;align-items:stretch;gap:.4rem}
+    .marca{text-align:center}
+    nav{justify-content:flex-start}
+    .campo::after{width:170px;height:170px}
+    .campo .contenido{padding:4rem 1.2rem}
+    .solucion{padding-left:1.2rem}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+
+<!-- Controles del menú (CSS puro: radios + labels) -->
+<input class="tab" type="radio" name="menu" id="t1" checked aria-label="Inicio">
+<input class="tab" type="radio" name="menu" id="t2" aria-label="Información básica">
+<input class="tab" type="radio" name="menu" id="t3" aria-label="Formaciones">
+<input class="tab" type="radio" name="menu" id="t4" aria-label="Problemas y soluciones">
+
+<header>
+  <div class="barra">
+    <div class="marca">⚽ Cancha Abierta</div>
+    <nav aria-label="Menú principal">
+      <label for="t1">Inicio</label>
+      <label for="t2">Información básica</label>
+      <label for="t3">Formaciones</label>
+      <label for="t4">Problemas y soluciones</label>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- INICIO -->
+  <section id="s1">
+    <div class="campo">
+      <span class="linea-media"></span>
+      <div class="contenido">
+        <h1>Entiende el fútbol. Juega mejor.</h1>
+        <p>Reglas, posiciones, tácticas y soluciones a los problemas más comunes en la cancha.</p>
+        <div class="accesos">
+          <label for="t2">Empezar por lo básico</label>
+          <label for="t4" class="alt">Resolver un problema</label>
+        </div>
+      </div>
+    </div>
+    <div class="contenedor">
+      <h2>Lo esencial en un vistazo</h2>
+      <p class="intro">Todo lo que necesitas para seguir un partido o prepararte para jugar uno.</p>
+      <div class="rejilla">
+        <div class="dato"><b>11 vs 11</b>Jugadores por equipo, incluido el portero.</div>
+        <div class="dato amarillo"><b>90 min</b>Dos tiempos de 45 minutos más el tiempo añadido.</div>
+        <div class="dato rojo"><b>17 reglas</b>Las Reglas de Juego que rigen cada partido oficial.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INFORMACIÓN BÁSICA -->
+  <section id="s2">
+    <div class="contenedor">
+      <h2>Información básica</h2>
+      <p class="intro">El objetivo es simple: meter el balón en la portería rival más veces que el contrario. Estas son las piezas que hacen funcionar el juego.</p>
+
+      <div class="bloque" style="margin-top:0">
+        <h3>Reglas clave</h3>
+        <ul class="reglas">
+          <li><strong>El balón no se toca con la mano ni el brazo</strong> (salvo el portero dentro de su área).</li>
+          <li><strong>Fuera de juego:</strong> un atacante está en posición adelantada si, cuando recibe el pase, está más cerca de la línea de meta rival que el balón y el penúltimo defensor.</li>
+          <li><strong>Penal:</strong> se cobra desde los 11 metros cuando hay una falta dentro del área.</li>
+          <li><strong>Tarjetas:</strong> <span class="tarjetas t-amarilla"></span>amarilla es una advertencia; <span class="tarjetas t-roja"></span>roja expulsa al jugador. Dos amarillas equivalen a una roja.</li>
+          <li><strong>Saques:</strong> de banda con las manos, de esquina y de meta según quién sacó el balón fuera.</li>
+        </ul>
+      </div>
+
+      <div class="bloque">
+        <h3>Posiciones</h3>
+        <div class="rejilla">
+          <div class="dato amarillo"><h3>Portero</h3>Defiende la portería y es el único que puede usar las manos en su área.</div>
+          <div class="dato"><h3>Defensas</h3>Frenan los ataques rivales y inician la salida del balón.</div>
+          <div class="dato"><h3>Mediocampistas</h3>Conectan defensa y ataque; controlan el ritmo del partido.</div>
+          <div class="dato rojo"><h3>Delanteros</h3>Crean y finalizan las jugadas de gol.</div>
+        </div>
+      </div>
+
+      <div class="bloque">
+        <h3>El campo</h3>
+        <div class="rejilla">
+          <div class="dato"><b>105 × 68 m</b>Medida habitual en partidos internacionales.</div>
+          <div class="dato amarillo"><b>7,32 × 2,44 m</b>Tamaño de la portería.</div>
+          <div class="dato rojo"><b>16,5 m</b>Largo del área grande desde la línea de meta.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMACIONES -->
+  <section id="s3">
+    <div class="contenedor">
+      <h2>Formaciones</h2>
+      <p class="intro">La formación indica cuántos jugadores van en defensa, medio campo y ataque (sin contar al portero). Cada una favorece un estilo distinto.</p>
+      <div class="rejilla">
+
+        <div class="formacion">
+          <h3>4-4-2</h3>
+          <div class="puntos">
+            <div class="fila"><i></i><i></i></div>
+            <div class="fila"><i></i><i></i><i></i><i></i></div>
+            <div class="fila"><i></i><i></i><i></i><i></i></div>
+            <div class="fila portero"><i></i></div>
+          </div>
+          <p>Equilibrada y fácil de entender. Dos líneas de cuatro bien ordenadas y dos delanteros.</p>
+        </div>
+
+        <div class="formacion">
+          <h3>4-3-3</h3>
+          <div class="puntos">
+            <div class="fila"><i></i><i></i><i></i></div>
+            <div class="fila"><i></i><i></i><i></i></div>
+            <div class="fila"><i></i><i></i><i></i><i></i></div>
+            <div class="fila portero"><i></i></div>
+          </div>
+          <p>Ofensiva. Tres atacantes abren el campo y el medio campo domina la posesión.</p>
+        </div>
+
+        <div class="formacion">
+          <h3>3-5-2</h3>
+          <div class="puntos">
+            <div class="fila"><i></i><i></i></div>
+            <div class="fila"><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="fila"><i></i><i></i><i></i></div>
+            <div class="fila portero"><i></i></div>
+          </div>
+          <p>Mucha presencia en el centro. Los laterales suben y bajan por toda la banda.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEMAS Y SOLUCIONES -->
+  <section id="s4">
+    <div class="contenedor">
+      <h2>Problemas y soluciones</h2>
+      <p class="intro">Toca cada problema para ver cómo resolverlo.</p>
+
+      <details>
+        <summary>Me canso antes de que termine el partido</summary>
+        <div class="solucion">
+          <p>Es falta de resistencia aeróbica. Se mejora con constancia.</p>
+          <ul>
+            <li>Corre de forma continua 20–30 minutos, 2 o 3 veces por semana.</li>
+            <li>Alterna intervalos: 1 minuto rápido y 1 minuto suave, repetido 8–10 veces.</li>
+            <li>Hidrátate antes, durante y después de jugar.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Pierdo el balón cuando me presionan</summary>
+        <div class="solucion">
+          <p>Casi siempre falta control del primer toque y mirar antes de recibir.</p>
+          <ul>
+            <li>Mira alrededor antes de que llegue el pase.</li>
+            <li>Orienta el primer toque hacia el espacio libre, lejos del rival.</li>
+            <li>Practica rondos (cuadros de pase con uno o dos defensores en medio).</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Fallo muchas ocasiones frente al arco</summary>
+        <div class="solucion">
+          <p>La definición mejora con repetición y calma, no solo con fuerza.</p>
+          <ul>
+            <li>Levanta la vista y elige un lugar antes de rematar.</li>
+            <li>Entrena con ambas piernas.</li>
+            <li>Prefiere colocar el balón en una esquina antes que patearlo con toda la potencia.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>No entiendo el fuera de juego</summary>
+        <div class="solucion">
+          <p>Estar adelantado no es falta por sí solo: la infracción ocurre cuando ese jugador participa en la jugada.</p>
+          <ul>
+            <li>Mira el momento exacto en que el compañero pasa el balón, no cuando lo recibes.</li>
+            <li>Compara tu posición con la del penúltimo defensor.</li>
+            <li>No hay fuera de juego en un saque de meta, de banda ni de esquina.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Sufro lesiones con frecuencia</summary>
+        <div class="solucion">
+          <p>Los tobillos y la parte trasera del muslo son las zonas más comunes.</p>
+          <ul>
+            <li>Calienta 10–15 minutos antes de jugar y estira al terminar.</li>
+            <li>Fortalece piernas y abdomen con ejercicios 2 veces por semana.</li>
+            <li>Descansa cuando sientas dolor y consulta a un profesional de la salud si persiste.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Mi equipo está desorganizado</summary>
+        <div class="solucion">
+          <p>Sin estructura, cada jugador corre solo y los espacios se abren.</p>
+          <ul>
+            <li>Define la formación y las funciones de cada posición antes de empezar.</li>
+            <li>Mantengan las líneas cerca unas de otras, a unos 30 metros entre defensa y ataque.</li>
+            <li>Hablen durante el partido: avisen quién marca y quién cubre.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Recibo muchas tarjetas</summary>
+        <div class="solucion">
+          <p>Suelen venir de llegar tarde a la jugada o de protestar.</p>
+          <ul>
+            <li>Si llegas tarde, mejor acompaña al rival en lugar de entrar con una barrida.</li>
+            <li>Deja que el capitán hable con el árbitro.</li>
+            <li>Respira antes de reaccionar a una falta.</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+  </section>
+
+</main>
+
+<!-- PIE DE PÁGINA: edita tus datos aquí -->
+<footer>
+  <div class="pie">
+    <div>
+      <h4>Cancha Abierta</h4>
+      <p>Una guía sencilla para aprender y mejorar en el fútbol.</p>
+    </div>
+    <div>
+      <h4>Contacto</h4>
+      <ul>
+        <li>Nombre: <strong>Tu nombre aquí</strong></li>
+        <li>Correo: <a href="mailto:tucorreo@ejemplo.com">futboleros11@ejemplo.com</a></li>
+        <li>Teléfono: <a href="tel:+000000000000">+503 6445 4063</a></li>
+        <li>Ciudad: Santa Rosa de Lima</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Redes</h4>
+      <ul>
+        <li><a href="https://instagram.com/:tu usuario">Instagram</a>Futbol_11</li>
+        <li><a href="https://facebook.com/:tu usuario">Facebook</a>Futbol_11</li>
+        <li><a href="https://x.com/Futbol/:tu usuario">X</a>Futbol_11</li>
+      </ul>
+    </div>
+  </div>
+  <div class="derechos">© 2026 Cancha Abierta. Todos los derechos reservados.</div>
+</footer>
+
+</body>
+</html>
